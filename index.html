@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#e10600" />
+  <link rel="manifest" href="manifest.json" />
+  <title>FORMULA 5</title>
+  <style>
+    :root {
+      --bg: #0b0b0d;
+      --card: #17171b;
+      --red: #e10600;
+      --text: #ffffff;
+      --muted: #c4c4c8;
+      --line: #2a2a31;
+      --panel: #101014;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top, #2b2b33 0%, var(--bg) 60%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 14px;
+    }
+    .app {
+      width: 100%;
+      max-width: 460px;
+      background: var(--card);
+      border: 2px solid var(--line);
+      border-radius: 20px;
+      padding: 14px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.55);
+    }
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .logo {
+      width: 120px;
+      height: 38px;
+      object-fit: contain;
+      background: #0f0f12;
+      border: 1px solid #34343d;
+      border-radius: 8px;
+      padding: 4px;
+    }
+    h1 {
+      margin: 8px 0 2px;
+      color: var(--red);
+      text-align: center;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+    }
+    .subtitle {
+      margin: 0 0 10px;
+      text-align: center;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+    .view { display: none; }
+    .view.active { display: block; }
+    .card {
+      border: 1px solid #34343d;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--panel);
+      margin-bottom: 12px;
+    }
+    .card h2 {
+      margin: 0;
+      padding: 10px;
+      text-align: center;
+      font-size: 1rem;
+      background: #2a1111;
+      border-bottom: 1px solid #5b1d1d;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .86rem;
+    }
+    th, td {
+      padding: 8px 6px;
+      border-bottom: 1px solid #26262d;
+      text-align: left;
+    }
+    th { color: #ffdcdc; font-size: .78rem; }
+    tr:last-child td { border-bottom: none; }
+    .pill {
+      display: inline-block;
+      background: #2a1111;
+      border: 1px solid #5b1d1d;
+      color: #ffb4b4;
+      border-radius: 999px;
+      font-size: .72rem;
+      padding: 3px 7px;
+    }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .btn {
+      border: 1px solid #5b1d1d;
+      background: #2a1111;
+      color: #fff;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn.small {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      padding: 0;
+      font-size: 1.2rem;
+    }
+    .btn.big {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+    }
+    .input {
+      width: 100%;
+      background: #0f0f12;
+      border: 1px solid #363641;
+      border-radius: 8px;
+      color: #fff;
+      padding: 9px;
+      margin-bottom: 8px;
+    }
+    .grid2 {
+      display: grid;
+      grid-template-columns: 2fr .8fr .8fr;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .row-label { font-size: .8rem; color: #cfcfd6; margin: 4px 0; }
+    .race-item {
+      border-top: 1px solid #26262d;
+      padding: 8px;
+    }
+    .race-item strong { color: #ffdcdc; }
+    .bottom-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .nav-btn {
+      border: 1px solid #34343d;
+      background: #111116;
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="top">
+      <img class="logo" alt="Símbolo da Fórmula 1" src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" />
+      <span class="pill">PWA</span>
+    </div>
+    <h1>FORMULA 5</h1>
+    <p class="subtitle">Seu campeonato de corrida</p>
+
+    <section id="view-dashboard" class="view active">
+      <div class="card">
+        <h2>CLASSIFICACAO DO CAMPEONATO</h2>
+        <table>
+          <thead>
+            <tr><th>POS</th><th>PILOTO</th><th>PTS</th></tr>
+          </thead>
+          <tbody id="championship-body"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h2>PONTOS POR POSICAO</h2>
+        <table>
+          <tbody>
+            <tr><td>1P</td><td>25</td><td>6P</td><td>7</td></tr>
+            <tr><td>2P</td><td>18</td><td>7P</td><td>6</td></tr>
+            <tr><td>3P</td><td>12</td><td>8P</td><td>5</td></tr>
+            <tr><td>4P</td><td>10</td><td>9P</td><td>2</td></tr>
+            <tr><td>5P</td><td>9</td><td>10P</td><td>1</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="view-races" class="view">
+      <div class="toolbar">
+        <strong>RESULTADO DAS CORRIDAS</strong>
+        <button class="btn small" id="open-create" aria-label="Criar corrida">+</button>
+      </div>
+      <div class="card">
+        <h2>CORRIDAS</h2>
+        <div id="race-list"></div>
+      </div>
+    </section>
+
+    <section id="view-create" class="view">
+      <div class="toolbar">
+        <strong>NOVA CORRIDA</strong>
+      </div>
+      <input id="track-name" class="input" placeholder="Nome da pista" />
+      <input id="track-country" class="input" placeholder="Pais" />
+      <div class="row-label">Preencha os 10 pilotos e as paradas no box:</div>
+      <div id="drivers-form"></div>
+      <button class="btn big" id="create-race">CRIAR CORRIDA</button>
+    </section>
+
+    <section id="view-calendar" class="view">
+      <div class="card">
+        <h2>CALENDARIO DE CORRIDAS</h2>
+        <ol class="standings-list">
+          <li>1 AUSTRALIA</li>
+          <li>2 JAPAO</li>
+          <li>3 MIAMI</li>
+          <li>4 BRASILIA</li>
+          <li>5 LAS VEGAS</li>
+          <li>6 BRASIL</li>
+          <li>7 PORTUGAL</li>
+          <li>8 AUSTRIA</li>
+          <li>9 REINO UNIDO</li>
+        </ol>
+      </div>
+    </section>
+
+    <div class="bottom-nav">
+      <button class="nav-btn" id="go-dashboard" title="Dashboard">📊</button>
+      <button class="nav-btn" id="go-races" title="Corridas">🏁</button>
+      <button class="nav-btn" id="go-calendar" title="Calendario">CORRIDAS</button>
+    </div>
+  </main>
+
+  <script>
+    const pointsByPosition = [25, 18, 12, 10, 9, 7, 6, 5, 2, 1];
+
+    const defaultDrivers = [
+      'GABRIEL BORTOLETO',
+      'MAX VERSTAPPEN',
+      'LANDO NORRIS',
+      'ARVID LINBLAD',
+      'BERMAN',
+      'HULKENBERG',
+      'PERES',
+      'SAINZ',
+      'ANTONELLI',
+      'COLAPINTO'
+    ];
+
+    const state = {
+      races: [],
+      championship: {}
+    };
+
+    const driverAliases = {
+      'MAX VERSTAPEN': 'MAX VERSTAPPEN',
+      'VERSTAPEN': 'MAX VERSTAPPEN',
+      'VERSTAPPEN': 'MAX VERSTAPPEN',
+      'CHECO PERES': 'PERES',
+      'PEREZ': 'PERES'
+    };
+
+    const views = {
+      dashboard: document.getElementById('view-dashboard'),
+      races: document.getElementById('view-races'),
+      create: document.getElementById('view-create'),
+      calendar: document.getElementById('view-calendar')
+    };
+
+    const championshipBody = document.getElementById('championship-body');
+    const raceList = document.getElementById('race-list');
+    const driversForm = document.getElementById('drivers-form');
+
+    function showView(name) {
+      Object.values(views).forEach((view) => view.classList.remove('active'));
+      views[name].classList.add('active');
+    }
+
+    function buildCreateForm() {
+      driversForm.innerHTML = '';
+      for (let i = 0; i < 10; i += 1) {
+        const row = document.createElement('div');
+        row.className = 'grid2';
+        row.innerHTML = `
+          <input class="input" data-field="driver" data-pos="${i + 1}" value="${defaultDrivers[i]}" />
+          <input class="input" data-field="position" data-pos="${i + 1}" value="${i + 1}" />
+          <input class="input" data-field="pitstops" data-pos="${i + 1}" value="1" />
+        `;
+        driversForm.appendChild(row);
+      }
+    }
+
+    function normalizeDriverName(name) {
+      const cleaned = String(name || '').toUpperCase().replace(/\s+/g, ' ').trim();
+      return driverAliases[cleaned] || cleaned;
+    }
+
+    function recalculateChampionship() {
+      state.championship = {};
+      state.races.forEach((race) => {
+        race.results.forEach((item) => {
+          if (!state.championship[item.driver]) state.championship[item.driver] = 0;
+          state.championship[item.driver] += item.points;
+        });
+      });
+    }
+
+    function renderChampionship() {
+      const rows = Object.entries(state.championship)
+        .sort((a, b) => b[1] - a[1]);
+
+      if (!rows.length) {
+        championshipBody.innerHTML = '<tr><td colspan="3">Sem corridas ainda.</td></tr>';
+        return;
+      }
+
+      championshipBody.innerHTML = rows
+        .map((entry, idx) => `<tr><td>${idx + 1}</td><td>${entry[0]}</td><td>${entry[1]}</td></tr>`)
+        .join('');
+    }
+
+    function renderRaces() {
+      if (!state.races.length) {
+        raceList.innerHTML = '<div class="race-item">Nenhuma corrida criada.</div>';
+        return;
+      }
+
+      raceList.innerHTML = state.races
+        .map((race, raceIndex) => {
+          const resultsHtml = race.results
+            .map((r) => `${r.position}. ${r.driver} | Box: ${r.pitstops} | ${r.points} pts`)
+            .join('<br>');
+
+          return `
+            <div class="race-item">
+              <strong>${raceIndex + 1}) ${race.track} - ${race.country}</strong><br>
+              ${resultsHtml}
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    function parseRaceForm() {
+      const track = document.getElementById('track-name').value.trim();
+      const country = document.getElementById('track-country').value.trim();
+      const driverInputs = [...driversForm.querySelectorAll('input[data-field="driver"]')];
+      const posInputs = [...driversForm.querySelectorAll('input[data-field="position"]')];
+      const pitInputs = [...driversForm.querySelectorAll('input[data-field="pitstops"]')];
+
+      if (!track || !country) return null;
+
+      const results = driverInputs.map((driverInput, idx) => {
+        const driver = normalizeDriverName(driverInput.value);
+        const position = Number(posInputs[idx].value);
+        const pitstops = Number(pitInputs[idx].value);
+        return { driver, position, pitstops };
+      }).filter((item) => item.driver);
+
+      const sorted = results.sort((a, b) => a.position - b.position).slice(0, 10);
+      sorted.forEach((item, idx) => {
+        item.points = pointsByPosition[idx] || 0;
+      });
+
+      return { track, country, results: sorted };
+    }
+
+    document.getElementById('go-dashboard').addEventListener('click', () => showView('dashboard'));
+    document.getElementById('go-races').addEventListener('click', () => showView('races'));
+    document.getElementById('go-calendar').addEventListener('click', () => showView('calendar'));
+    document.getElementById('open-create').addEventListener('click', () => showView('create'));
+
+    document.getElementById('create-race').addEventListener('click', () => {
+      const race = parseRaceForm();
+      if (!race) {
+        alert('Preencha nome da pista e pais.');
+        return;
+      }
+      state.races.push(race);
+      recalculateChampionship();
+      renderChampionship();
+      renderRaces();
+      showView('races');
+    });
+
+    buildCreateForm();
+    renderChampionship();
+    renderRaces();
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+  </script>
+</body>
+</html>
